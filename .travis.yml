@@ -13,7 +13,18 @@ addons:
   apt:
     packages:
     - gfortran
-#script:
-  - julia -e 'Pkg.clone(pwd()); Pkg.build("CES.Earth"); Pkg.test("CES.Earth"; coverage=true)'
+script:
+  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+  - julia --check-bounds=yes -e 'Pkg.clone(pwd()); Pkg.build("CESEarth"); Pkg.test("CESEarth"; coverage=true)'
 after_success:
-  #- julia -e 'cd(Pkg.dir("CES.Earth")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+    # Upload docs
+  - |
+      if [[ "$TRAVIS_OS_NAME" == "linux" && "$TRAVIS_JULIA_VERSION" == "0.6"  && "$TRAVIS_PULL_REQUEST" = "false" && "$TRAVIS_BRANCH" == "master" ]]; then
+        julia -e 'Pkg.add("Documenter")'
+        julia -e 'cd(Pkg.dir("CESEarth")); include(joinpath("docs", "make.jl"))'
+      fi
+  # Coverage report
+  - |
+      if [[ "$TRAVIS_OS_NAME" == "linux" && "$TRAVIS_JULIA_VERSION" == "0.6" ]]; then
+        julia -e 'cd(Pkg.dir("CESEarth")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+      fi
