@@ -1,0 +1,19 @@
+language: julia
+os:
+  - linux
+julia:
+  - 0.6
+  - nightly
+notifications:
+  email: false
+matrix:
+  allow_failures:
+  - julia: nightly
+addons:
+  apt:
+    packages:
+    - gfortran
+#script:
+  - julia -e 'Pkg.clone(pwd()); Pkg.build("CES.Earth"); Pkg.test("CES.Earth"; coverage=true)'
+after_success:
+  #- julia -e 'cd(Pkg.dir("CES.Earth")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
