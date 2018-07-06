@@ -48,11 +48,15 @@ end
 @testset "Functions" begin
     cₐ = 23.8;
     ΔT = 0.2;
+    cₘ = 15.3;
     @testset "Land" begin
         @test CESEarth.NPP(cₐ, c) ≈ 2.05578005
         @test CESEarth.R(ΔT, c) ≈  55.599804
         @test CESEarth.K(cₐ, ΔT, c) ≈ 69.32736
     end
     @testset "Ocean" begin
+        @test CESEarth.p(cₘ, ΔT, c) ≈ 2.90540106e-19
+        @test CESEarth.S(cₘ, ΔT, c) ≈ 88.47
+        @test CESEarth.B(ΔT, c) ≈ 4.68
     end
 end

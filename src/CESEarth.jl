@@ -58,7 +58,7 @@ Carbon loss from the world's soils
 
 This is calculated using the Q₁₀ formalism [Xu and Shang (2016)]
 """
-function R(ΔT, c::Constants)
+function R(ΔT::Float64, c::Constants)
     #R₀≡NPP₀
     c.NPP₀*c.QR^(ΔT/10.)
 end
@@ -66,10 +66,37 @@ end
 """
 Terrestrial carbon carrying capacity
 """
-function K(cₐ::Float64, ΔT, c::Constants)
+function K(cₐ::Float64, ΔT::Float64, c::Constants)
     ((1+c.KC*log.(cₐ/c.cₐ₀))/(c.QR^(ΔT/10.)))*c.cₜ₀
 end
 
 ## Ocean functions
+
+"""
+A proportionality function which describes the rate of CO₂ diffusivity
+between the atmosphere and ocean mixed layer.
+
+The rate is ``\\propto c_a - p(c_m, \\Delta T)``, since the pre-industrial
+equilibrium ``p(c_{m0}, 0) \\equiv c_{a0}``.
+"""
+function p(cₘ::Float64, ΔT::Float64, c::Constants)
+    c.cₐ₀*(cₘ/c.cₘ₀)^c.r*(1/(1-c.DT*ΔT))
+end
+
+"""
+Net transport of carbon to the lower ocean by the solubility pump
+"""
+function S(cₘ::Float64, ΔT::Float64, c::Constants)
+    c.w₀*(1-c.wT*ΔT)*(cₘ-c.cₘ₀)
+end
+
+"""
+Transport rate out of the upper ocean mixing layer by the biological
+pump to the lower ocean.
+"""
+function B(ΔT::Float64, c::Constants)
+    c.B₀*(1-c.BT*ΔT)
+end
+
 
 end
