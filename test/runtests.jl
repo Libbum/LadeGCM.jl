@@ -45,7 +45,7 @@ c = constants();
     end
 end
 
-@testset "Functions" begin
+@testset "Helper Functions" begin
     cₐ = 23.8;
     ΔT = 0.2;
     cₘ = 15.3;
