@@ -43,61 +43,146 @@ end
 
 export constants
 
-RCP45 = CSV.read(joinpath(@__DIR__, "..", "input", "RCP45_EMISSIONS.csv"), header=37, datarow=38, types=[Int64; repeat([Float64]; outer=[39])]);
-tmpnames = names(RCP45);
-tmpnames[1] = :Year;
-names!(RCP45, tmpnames);
+# Pathways
+abstract type Pathway end
+immutable RCP3PDPathway <: Pathway end
+immutable RCP45Pathway <: Pathway end
+immutable RCP6Pathway <: Pathway end
+immutable RCP85Pathway <: Pathway end
 
-E = RCP45[:FossilCO2];
-LUC = RCP45[:OtherCO2];
-Years = (RCP45[:Year],);
-itpE = interpolate(Years, E, Gridded(Linear()));
-itpLUC = interpolate(Years, LUC, Gridded(Linear()));
+RCP3PD = RCP3PDPathway()
+RCP45 = RCP45Pathway()
+RCP6 = RCP6Pathway()
+RCP85 = RCP85Pathway()
 
-c = constants();
+Base.show(io::IO, s::RCP3PDPathway) = print(io, "+2.6 W/m² (Peak & Decline) Representative Concentration Pathway")
+Base.show(io::IO, s::RCP45Pathway) = print(io, "+4.5 W/m² Representative Concentration Pathway")
+Base.show(io::IO, s::RCP6Pathway) = print(io, "+6.0 W/m² Representative Concentration Pathway")
+Base.show(io::IO, s::RCP85Pathway) = print(io, "+8.5 W/m² Representative Concentration Pathway")
+Base.summary(s::RCP3PDPathway) = "RCP3PD"
+Base.summary(s::RCP45Pathway) = "RCP45"
+Base.summary(s::RCP6Pathway) = "RCP6"
+Base.summary(s::RCP85Pathway) = "RCP85"
 
-tspan = (1765.,2100.);
-#       cₜ     cₘ           cₛ          ΔT    cₐ
-u₀ = [c.cₜ₀, c.cₘ₀, c.cₐ₀+c.cₜ₀+c.cₘ₀, 0.0, c.cₐ₀];
-du₀ = [0.0, 0.0, 0.0, 0.0, 0.0];
-diff_vars = [true,true,true,true,false];
-params = [c.NPP₀, c.KC, c.cₐ₀, c.QR, c.cₜ₀, c.D, c.cₘ₀, c.r, c.DT, c.w₀, c.wT, c.B₀, c.BT, c.τ, c.λ];
+export RCP3PD, RCP45, RCP6, RCP85
 
-function system(out, du, u, p, t)
-    (NPP₀, KC, cₐ₀, QR, cₜ₀, D, cₘ₀, r, DT, w₀, wT, B₀, BT, τ, λ) = p
-    cₜ = u[1]
-    cₘ = u[2]
-    cₛ = u[3]
-    ΔT = u[4]
-    cₐ = u[5]
-    #Helpers
-    K(ca,DeltaT) = ((1+KC*log(ca/cₐ₀))/(QR^(DeltaT/10.)))*cₜ₀
-    ph(cm,DeltaT) = cₐ₀*(cm/cₘ₀)^r*(1/(1-DT*DeltaT))
-    S(cm,DeltaT) = w₀*(1-wT*DeltaT)*(cm-cₘ₀)
-    B(DeltaT) = B₀*(1-BT*DeltaT)
-    out[1] = (NPP₀/cₜ₀)*QR^(ΔT/10.)*(K(cₐ,ΔT)-cₜ)-itpLUC[t] - du[1] #cₜ
-    out[2] = ((D*cₘ₀)/(r*cₐ₀))*(cₐ-ph(cₘ,ΔT))-S(cₘ,ΔT)-B(ΔT)+B₀ - du[2] #cₘ
-    out[3] = itpE[t] - S(cₘ,ΔT) - (B(ΔT)-B₀) - du[3] #cₛ
-    out[4] = (1/τ)*((λ/log(2))*log(cₐ/cₐ₀)-ΔT) - du[4] #ΔT
-    out[5] = cₐ + cₜ + cₘ - cₛ #equivalence (cₐ)
+"""
+    data_frame = load_pathway_data(RCP45)
+
+Loads csv file for a given RCP scenario into a dataframe for processing.
+The information in these files come from Meinshausen et al. (2011), which were
+generated using MAGICC6.
+"""
+function load_pathway_data{P<:Pathway}(rcp::P)
+    data = CSV.read(joinpath(@__DIR__, "..", "input", string(summary(rcp), "_EMISSIONS.csv")), header=37, datarow=38, types=[Int64; repeat([Float64]; outer=[39])]);
+    tmpnames = names(data);
+    tmpnames[1] = :Year;
+    names!(data, tmpnames);
 end
 
-prob = DAEProblem(system,du₀,u₀,tspan,params,differential_vars=diff_vars);
-sol = solve(prob,IDA());
+"""
+    (E, LUC) = generate_emission_parameters(RCP45)
 
-# Extract all values for ease of use
-cₜ = sol[1,:];
-cₘ = sol[2,:];
-cₛ = sol[3,:];
-ΔT = sol[4,:];
-cₐ = sol[5,:];
+For a given concentration pathway, generate continuous functions
+for fossil fuel emissions `E(t)` and land use emissions `LUC(t)`.
 
-Δcₜ = [sol.du[i][1] for i in 1:length(sol.t)];
-Δcₘ = [sol.du[i][2] for i in 1:length(sol.t)];
-Δcₛ = [sol.du[i][3] for i in 1:length(sol.t)];
-Δcₐ = Δcₛ - Δcₜ - Δcₘ;
-ΔcM = [Δcₘ[i] + sum.(c.w₀*(1-c.wT*ΔT[i])*(cₘ[i]-c.cₘ₀)+c.B₀*(1-c.BT*ΔT[i])-c.B₀) for i in 1:length(sol.t)];
+Data comes from files on disk and is linearly interpolated to
+provide the continuous output.
+"""
+function generate_emission_parameters{P<:Pathway}(rcp::P)
+    data = load_pathway_data(rcp);
+    Years = (data[:Year],);
+    E = interpolate(Years, data[:FossilCO2], Gridded(Linear()));
+    LUC = interpolate(Years, data[:OtherCO2], Gridded(Linear()));
+    (E, LUC)
+end
 
-export cₜ, cₘ, cₛ, ΔT, cₐ, Δcₜ, Δcₘ, Δcₛ, Δcₐ, ΔcM, sol
+"""
+    calculate(RCP45)
+
+Entry point to the module. Will construct all required parameters and solve the DAE.
+"""
+function calculate{P<:Pathway}(rcp::P; #Which scenario are we solving for?
+    c::Constants = constants(), #Input conditions
+    tspan = (1765., 2100.)) #Time span of solution
+
+    #Get emission data
+    const (E, LUC) = generate_emission_parameters(rcp);
+
+    #Construct initial conditions and parameters for DAE solving
+    #       cₜ     cₘ           cₛ          ΔT    cₐ
+    u₀ = [c.cₜ₀, c.cₘ₀, c.cₐ₀+c.cₜ₀+c.cₘ₀, 0.0, c.cₐ₀];
+    du₀ = similar(u₀);
+    diff_vars = [true,true,true,true,false];
+    params = [c.NPP₀, c.KC, c.cₐ₀, c.QR, c.cₜ₀, c.D, c.cₘ₀, c.r, c.DT, c.w₀, c.wT, c.B₀, c.BT, c.τ, c.λ];
+
+    """
+    This function is the one used for solving the DAE.
+    """
+    function system(out, du, u, p, t)
+        (NPP₀, KC, cₐ₀, QR, cₜ₀, D, cₘ₀, r, DT, w₀, wT, B₀, BT, τ, λ) = p
+        cₜ = u[1]
+        cₘ = u[2]
+        cₛ = u[3]
+        ΔT = u[4]
+        cₐ = u[5]
+        #Helpers
+        K(ca,DeltaT) = ((1+KC*log(ca/cₐ₀))/(QR^(DeltaT/10.)))*cₜ₀
+        ph(cm,DeltaT) = cₐ₀*(cm/cₘ₀)^r*(1/(1-DT*DeltaT))
+        S(cm,DeltaT) = w₀*(1-wT*DeltaT)*(cm-cₘ₀)
+        B(DeltaT) = B₀*(1-BT*DeltaT)
+        out[1] = (NPP₀/cₜ₀)*QR^(ΔT/10.)*(K(cₐ,ΔT)-cₜ)-LUC[t] - du[1] #cₜ
+        out[2] = ((D*cₘ₀)/(r*cₐ₀))*(cₐ-ph(cₘ,ΔT))-S(cₘ,ΔT)-B(ΔT)+B₀ - du[2] #cₘ
+        out[3] = E[t] - S(cₘ,ΔT) - (B(ΔT)-B₀) - du[3] #cₛ
+        out[4] = (1/τ)*((λ/log(2))*log(cₐ/cₐ₀)-ΔT) - du[4] #ΔT
+        out[5] = cₐ + cₜ + cₘ - cₛ #equivalence (cₐ)
+    end
+
+    prob = DAEProblem(system,du₀,u₀,tspan,params,differential_vars=diff_vars);
+    #Solve the DAE.
+    sol = solve(prob,IDA());
+
+    #TODO: This function gives us the output according to `sol.t`.
+    #If we wish to alter those numbers, we should be able to interpolate up
+    #using e.g. `sol(1987:0.1:1990)`. But for the moment I'm not sure how
+    #we access the sol.du values for this option.
+    results(sol, c)
+
+end
+
+export calculate
+
+immutable Results
+    cₜ::Array{Float64,1} #PgC, Terrestrial (soil and vegetation) carbon concentration
+    cₘ::Array{Float64,1} #PgC, Ocean mixed later carbon concentration
+    cₛ::Array{Float64,1} #PgC, System (total) carbon concentration (Atmospheric + Terrestrial + Ocean mixed layer)
+    cₐ::Array{Float64,1} #PgC, Atmospheric carbon concentration
+    ΔT::Array{Float64,1} #K, Surface temperature relative to per-industrial ΔT ≡ T - T₀
+    Δcₜ::Array{Float64,1} #PgC yr⁻¹, Terrestrial carbon stock changes
+    Δcₘ::Array{Float64,1} #PgC yr⁻¹, Ocean mixed layer carbon stock changes
+    ΔcM::Array{Float64,1} #PgC yr⁻¹, Total ocean carbon stock changes (Mixed layer + deep ocean sink)
+    Δcₛ::Array{Float64,1} #PgC yr⁻¹, System carbon stock changes
+    Δcₐ::Array{Float64,1} #PgC yr⁻¹, Atmospheric carbon stock changes
+    year::Array{Float64,1} #yr, Corresponding time to results
+end
+
+"""
+Probably a temporary solution until such time as we can get interpolated `sol.du` values
+"""
+function results(sol::DiffEqBase.DAESolution, c::Constants)
+    cₜ = sol[1,:];
+    cₘ = sol[2,:];
+    cₛ = sol[3,:];
+    ΔT = sol[4,:];
+    cₐ = sol[5,:];
+
+    Δcₜ = [sol.du[i][1] for i in 1:length(sol.t)];
+    Δcₘ = [sol.du[i][2] for i in 1:length(sol.t)];
+    Δcₛ = [sol.du[i][3] for i in 1:length(sol.t)];
+    Δcₐ = Δcₛ - Δcₜ - Δcₘ;
+    ΔcM = [Δcₘ[i] + sum.(c.w₀*(1-c.wT*ΔT[i])*(cₘ[i]-c.cₘ₀)+c.B₀*(1-c.BT*ΔT[i])-c.B₀) for i in 1:length(sol.t)];
+
+    Results(cₜ, cₘ, cₛ, cₐ, ΔT, Δcₜ, Δcₘ, ΔcM, Δcₛ, Δcₐ, sol.t)
+end
 
 end
