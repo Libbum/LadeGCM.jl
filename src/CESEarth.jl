@@ -94,27 +94,38 @@ function generate_emission_parameters{P<:Pathway}(rcp::P)
     Years = (data[:Year],);
     E = interpolate(Years, data[:FossilCO2], Gridded(Linear()));
     LUC = interpolate(Years, data[:OtherCO2], Gridded(Linear()));
-    (E, LUC)
+    E, LUC
 end
 
 """
     calculate(RCP45)
 
 Entry point to the module. Will construct all required parameters and solve the DAE.
+
+The `trange` parameter allows you to get outputs on a regular grid using any range.
+Instead of using the `saveat` flag in the solver, we instead override the data collection
+after a solution has been found.
+
+The `saveat` flag ultimately linearly interpolates any values for which the solver has no data for,
+but since our DAE is solved with the IDA solver from Sundials, we can invoke the Hermite interpolator
+for better interpolation results after the fact.
+
+Mind you, neither way gives amazing results if you need to oversample, so use with caution.
 """
 function calculate{P<:Pathway}(rcp::P; #Which scenario are we solving for?
-    c::Constants = constants(), #Input conditions
-    tspan = (1765., 2100.)) #Time span of solution
+    c::Constants = constants(), #Input conditions.
+    tspan = (1765., 2100.), #Time span of calculation.
+    trange = nothing) #Optional value that one can use if they wish to have the final results on a specified year grid.
 
     #Get emission data
     const (E, LUC) = generate_emission_parameters(rcp);
 
     #Construct initial conditions and parameters for DAE solving
     #       cₜ     cₘ           cₛ          ΔT    cₐ
-    u₀ = [c.cₜ₀, c.cₘ₀, c.cₐ₀+c.cₜ₀+c.cₘ₀, 0.0, c.cₐ₀];
-    du₀ = similar(u₀);
-    diff_vars = [true,true,true,true,false];
-    params = [c.NPP₀, c.KC, c.cₐ₀, c.QR, c.cₜ₀, c.D, c.cₘ₀, c.r, c.DT, c.w₀, c.wT, c.B₀, c.BT, c.τ, c.λ];
+    const u₀ = [c.cₜ₀, c.cₘ₀, c.cₐ₀+c.cₜ₀+c.cₘ₀, 0.0, c.cₐ₀];
+    const du₀ = similar(u₀);
+    const diff_vars = [true,true,true,true,false];
+    const params = [c.NPP₀, c.KC, c.cₐ₀, c.QR, c.cₜ₀, c.D, c.cₘ₀, c.r, c.DT, c.w₀, c.wT, c.B₀, c.BT, c.τ, c.λ];
 
     """
     This function is the one used for solving the DAE.
@@ -142,11 +153,7 @@ function calculate{P<:Pathway}(rcp::P; #Which scenario are we solving for?
     #Solve the DAE.
     sol = solve(prob,IDA());
 
-    #TODO: This function gives us the output according to `sol.t`.
-    #If we wish to alter those numbers, we should be able to interpolate up
-    #using e.g. `sol(1987:0.1:1990)`. But for the moment I'm not sure how
-    #we access the sol.du values for this option.
-    results(sol, c)
+    results(sol, c, trange)
 
 end
 
@@ -167,22 +174,47 @@ immutable Results
 end
 
 """
-Probably a temporary solution until such time as we can get interpolated `sol.du` values
+Puts all solution data into an easy to work with array
 """
-function results(sol::DiffEqBase.DAESolution, c::Constants)
-    cₜ = sol[1,:];
-    cₘ = sol[2,:];
-    cₛ = sol[3,:];
-    ΔT = sol[4,:];
-    cₐ = sol[5,:];
+function collect_results{S<:DiffEqBase.DAESolution}(sol::S, c::Constants)
+    hcat(sol.u...)', hcat(sol.du...)'
+end
 
-    Δcₜ = [sol.du[i][1] for i in 1:length(sol.t)];
-    Δcₘ = [sol.du[i][2] for i in 1:length(sol.t)];
-    Δcₛ = [sol.du[i][3] for i in 1:length(sol.t)];
+"""
+Uses a user input range to interpolate the solution to a required precision
+"""
+function collect_results{S<:DiffEqBase.DAESolution, T<:Range}(sol::S, c::Constants, t::T)
+    hcat(sol(t, Val{0})...)', hcat(sol(t, Val{1})...)'
+end
+
+"""
+Collects all required outputs from the DAE solution.
+
+The use of the `t`ime range can set a specific grid of values if users
+require results from the continuous version.
+"""
+function results{S<:DiffEqBase.DAESolution}(sol::S, c::Constants, t_range=nothing)
+    if t_range == nothing
+        const (u, du) = collect_results(sol, c);
+        const time = sol.t;
+    else
+        const (u, du) = collect_results(sol, c, t_range);
+        const time = collect(t_range);
+    end
+
+    cₜ = u[:,1];
+    cₘ = u[:,2];
+    cₛ = u[:,3];
+    ΔT = u[:,4];
+    cₐ = u[:,5];
+
+    Δcₜ = du[:,1];
+    Δcₘ = du[:,2];
+    Δcₛ = du[:,3];
     Δcₐ = Δcₛ - Δcₜ - Δcₘ;
-    ΔcM = [Δcₘ[i] + sum.(c.w₀*(1-c.wT*ΔT[i])*(cₘ[i]-c.cₘ₀)+c.B₀*(1-c.BT*ΔT[i])-c.B₀) for i in 1:length(sol.t)];
+    ΔcM = [Δcₘ[i] + sum.(c.w₀*(1-c.wT*ΔT[i])*(cₘ[i]-c.cₘ₀)+c.B₀*(1-c.BT*ΔT[i])-c.B₀) for i in 1:length(time)];
 
-    Results(cₜ, cₘ, cₛ, cₐ, ΔT, Δcₜ, Δcₘ, ΔcM, Δcₛ, Δcₐ, sol.t)
+    Results(cₜ, cₘ, cₛ, cₐ, ΔT, Δcₜ, Δcₘ, ΔcM, Δcₛ, Δcₐ, time)
 end
 
 end
