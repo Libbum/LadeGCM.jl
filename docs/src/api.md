@@ -2,7 +2,7 @@
 
 ```@meta
 DocTestSetup = quote
-    using CESEarth
+    using LadeGCM
 end
 ```
 
@@ -10,5 +10,5 @@ end
 ```
 
 ```@autodocs
-Modules = [CESEarth]
+Modules = [LadeGCM]
 ```
