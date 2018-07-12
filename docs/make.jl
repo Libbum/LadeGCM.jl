@@ -1,6 +1,6 @@
 using Documenter, LadeGCM
 
-makedocs(format = :html, sitename="Lade GCM")
+makedocs()
 
 deploydocs(
     deps   = Deps.pip("pygments", "mkdocs", "python-markdown-math"),
