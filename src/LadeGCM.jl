@@ -1,4 +1,4 @@
-module CESEarth
+module LadeGCM
 
 using DifferentialEquations
 using CSV, DataFrames
@@ -117,7 +117,7 @@ function calculate{P<:Pathway}(rcp::P; #Which scenario are we solving for?
     const (E, LUC) = generate_emission_parameters(rcp);
 
     #Construct initial conditions and parameters for DAE solving
-    #       cₜ     cₘ           cₛ          ΔT    cₐ
+    #             cₜ     cₘ           cₛ          ΔT    cₐ
     const u₀ = [c.cₜ₀, c.cₘ₀, c.cₐ₀+c.cₜ₀+c.cₘ₀, 0.0, c.cₐ₀];
     const du₀ = similar(u₀);
     const diff_vars = [true,true,true,true,false];

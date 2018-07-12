@@ -1,9 +1,9 @@
-using Documenter, CESEarth
+using Documenter, LadeGCM
 
-makedocs(format = :html, sitename="CES.Earth")
+makedocs(format = :html, sitename="Lade GCM")
 
 deploydocs(
     deps   = Deps.pip("pygments", "mkdocs", "python-markdown-math"),
-    repo   = "github.com/Libbum/CES.Earth.git",
+    repo   = "github.com/Libbum/LadeGCM.jl.git",
     julia  = "0.6"
 )

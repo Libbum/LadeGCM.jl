@@ -1,6 +1,6 @@
-site_name:        CES.Earth
-repo_url:         https://github.com/Libbum/CES.Earth
-site_description: A currently unnamed climate-economy-sociological model.
+site_name:        Lade GCM
+repo_url:         https://github.com/Libbum/LadeGCM
+site_description: Steve Lade's stylised global climate–carbon cycle model.
 site_author:      Tim DuBois
 
 theme: readthedocs
