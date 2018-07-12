@@ -74,7 +74,7 @@ end
     end
 end
 
-@testset "Emission Pameters" begin
+@testset "Emission Parameters" begin
     @testset "Loading data" begin
         data_frame = LadeGCM.load_pathway_data(RCP45);
         @test data_frame[:Year][1] == 1765
