@@ -3,7 +3,7 @@ repo_url:         https://github.com/Libbum/LadeGCM.jl
 site_description: Steve Lade's stylised global climate–carbon cycle model.
 site_author:      Tim DuBois
 
-theme: readthedocs
+theme: cinder
 
 extra_css:
   - assets/Documenter.css
