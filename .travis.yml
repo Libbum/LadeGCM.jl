@@ -14,7 +14,7 @@ addons:
     packages:
     - gfortran
 install:
-  pip install mkdocs-cinder
+  pip install --user mkdocs-cinder
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - julia --check-bounds=yes -e 'Pkg.clone(pwd()); Pkg.build("LadeGCM"); Pkg.test("LadeGCM"; coverage=true)'
