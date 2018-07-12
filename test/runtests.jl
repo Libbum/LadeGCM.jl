@@ -1,4 +1,4 @@
-using CESEarth
+using LadeGCM
 
 @static if VERSION < v"0.7.0-DEV.2005"
     using Base.Test
@@ -51,14 +51,14 @@ end
     rcp6 = RCP6;
     rcp85 = RCP85;
     @testset "Types" begin
-        @test typeof(rcp26) <: CESEarth.Pathway
-        @test isa(rcp26, CESEarth.RCP3PDPathway)
-        @test typeof(rcp45) <: CESEarth.Pathway
-        @test isa(rcp45, CESEarth.RCP45Pathway)
-        @test typeof(rcp6) <: CESEarth.Pathway
-        @test isa(rcp6, CESEarth.RCP6Pathway)
-        @test typeof(rcp85) <: CESEarth.Pathway
-        @test isa(rcp85, CESEarth.RCP85Pathway)
+        @test typeof(rcp26) <: LadeGCM.Pathway
+        @test isa(rcp26, LadeGCM.RCP3PDPathway)
+        @test typeof(rcp45) <: LadeGCM.Pathway
+        @test isa(rcp45, LadeGCM.RCP45Pathway)
+        @test typeof(rcp6) <: LadeGCM.Pathway
+        @test isa(rcp6, LadeGCM.RCP6Pathway)
+        @test typeof(rcp85) <: LadeGCM.Pathway
+        @test isa(rcp85, LadeGCM.RCP85Pathway)
     end
     @testset "Show" begin
         @test sprint(show, rcp26) == "+2.6 W/m² (Peak & Decline) Representative Concentration Pathway"
@@ -76,13 +76,13 @@ end
 
 @testset "Emission Pameters" begin
     @testset "Loading data" begin
-        data_frame = CESEarth.load_pathway_data(RCP45);
+        data_frame = LadeGCM.load_pathway_data(RCP45);
         @test data_frame[:Year][1] == 1765
         @test data_frame[:FossilCO2][345] ≈ 3.19374
         @test data_frame[:OtherCO2][end] ≈ 0.0
     end
     @testset "Generate Continuous Data" begin
-        (E, LUC) = CESEarth.generate_emission_parameters(RCP45);
+        (E, LUC) = LadeGCM.generate_emission_parameters(RCP45);
         @test E[1728.8] ≈ 0.003
         @test E[2100] ≈ 4.203
         @test LUC[1982.77] ≈ 1.217443742
