@@ -102,20 +102,16 @@ end
 
 Entry point to the module. Will construct all required parameters and solve the DAE.
 
-The `trange` parameter allows you to get outputs on a regular grid using any range.
-Instead of using the `saveat` flag in the solver, we instead override the data collection
-after a solution has been found.
+Any flags you wish to pass to the solver can be added to the end of the call.
 
-The `saveat` flag ultimately linearly interpolates any values for which the solver has no data for,
-but since our DAE is solved with the IDA solver from Sundials, we can invoke the Hermite interpolator
-for better interpolation results after the fact.
+    calculate(RCP45, reltol=1e-10, abstol=1e-10, saveat=1765:0.1:2100)
 
-Mind you, neither way gives amazing results if you need to oversample, so use with caution.
+Works as expected.
 """
 function calculate{P<:Pathway}(rcp::P; #Which scenario are we solving for?
     c::Constants = constants(), #Input conditions.
     tspan = (1765., 2100.), #Time span of calculation.
-    trange = nothing) #Optional value that one can use if they wish to have the final results on a specified year grid.
+    solve_args...) #Any additional arguments to pass to the solver, like tolerances or timestep alterations.
 
     #Get emission data
     const (E, LUC) = generate_emission_parameters(rcp);
@@ -151,9 +147,9 @@ function calculate{P<:Pathway}(rcp::P; #Which scenario are we solving for?
 
     prob = DAEProblem(system,du₀,u₀,tspan,params,differential_vars=diff_vars);
     #Solve the DAE.
-    sol = solve(prob,IDA());
+    sol = solve(prob,IDA();solve_args...);
 
-    results(sol, c, trange)
+    results(sol, c)
 
 end
 
@@ -174,33 +170,11 @@ immutable Results
 end
 
 """
-Puts all solution data into an easy to work with array
-"""
-function collect_results{S<:DiffEqBase.DAESolution}(sol::S, c::Constants)
-    hcat(sol.u...)', hcat(sol.du...)'
-end
-
-"""
-Uses a user input range to interpolate the solution to a required precision
-"""
-function collect_results{S<:DiffEqBase.DAESolution, T<:Range}(sol::S, c::Constants, t::T)
-    hcat(sol(t, Val{0})...)', hcat(sol(t, Val{1})...)'
-end
-
-"""
 Collects all required outputs from the DAE solution.
-
-The use of the `t`ime range can set a specific grid of values if users
-require results from the continuous version.
 """
-function results{S<:DiffEqBase.DAESolution}(sol::S, c::Constants, t_range=nothing)
-    if t_range == nothing
-        const (u, du) = collect_results(sol, c);
-        const time = sol.t;
-    else
-        const (u, du) = collect_results(sol, c, t_range);
-        const time = collect(t_range);
-    end
+function results{S<:DiffEqBase.DAESolution}(sol::S, c::Constants)
+    const u = hcat(sol(sol.t, Val{0})...)';
+    const du = hcat(sol(sol.t, Val{1})...)';
 
     cₜ = u[:,1];
     cₘ = u[:,2];
@@ -212,9 +186,9 @@ function results{S<:DiffEqBase.DAESolution}(sol::S, c::Constants, t_range=nothin
     Δcₘ = du[:,2];
     Δcₛ = du[:,3];
     Δcₐ = Δcₛ - Δcₜ - Δcₘ;
-    ΔcM = [Δcₘ[i] + sum.(c.w₀*(1-c.wT*ΔT[i])*(cₘ[i]-c.cₘ₀)+c.B₀*(1-c.BT*ΔT[i])-c.B₀) for i in 1:length(time)];
+    ΔcM = [Δcₘ[i] + sum.(c.w₀*(1-c.wT*ΔT[i])*(cₘ[i]-c.cₘ₀)+c.B₀*(1-c.BT*ΔT[i])-c.B₀) for i in 1:length(sol.t)];
 
-    Results(cₜ, cₘ, cₛ, cₐ, ΔT, Δcₜ, Δcₘ, ΔcM, Δcₛ, Δcₐ, time)
+    Results(cₜ, cₘ, cₛ, cₐ, ΔT, Δcₜ, Δcₘ, ΔcM, Δcₛ, Δcₐ, sol.t)
 end
 
 end
