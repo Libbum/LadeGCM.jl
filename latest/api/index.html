@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="Tim DuBois">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>API - LadeGCM.jl</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  <link href="../assets/Documenter.css" rel="stylesheet">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "API";
+    var mkdocs_page_input_path = "api.md";
+    var mkdocs_page_url = "/api/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> LadeGCM.jl</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">Home</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">API</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#api">API</a></li>
+    
+
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">LadeGCM.jl</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>API</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/Libbum/LadeGCM.jl/edit/master/docs/api.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <p><a id='API-1'></a></p>
+<h1 id="api">API</h1>
+<ul>
+<li><a href="./#LadeGCM.calculate-Union{Tuple{P}, Tuple{P}} where P&lt;:LadeGCM.Pathway"><code>LadeGCM.calculate</code></a></li>
+<li><a href="./#LadeGCM.generate_emission_parameters-Union{Tuple{P}, Tuple{P}} where P&lt;:LadeGCM.Pathway"><code>LadeGCM.generate_emission_parameters</code></a></li>
+<li><a href="./#LadeGCM.load_pathway_data-Union{Tuple{P}, Tuple{P}} where P&lt;:LadeGCM.Pathway"><code>LadeGCM.load_pathway_data</code></a></li>
+<li><a href="./#LadeGCM.results-Union{Tuple{S,LadeGCM.Constants}, Tuple{S}} where S&lt;:DiffEqBase.DAESolution"><code>LadeGCM.results</code></a></li>
+</ul>
+<p><a id='LadeGCM.calculate-Union{Tuple{P}, Tuple{P}} where P<:LadeGCM.Pathway' href='#LadeGCM.calculate-Union{Tuple{P}, Tuple{P}} where P<:LadeGCM.Pathway'>#</a>
+<strong><code>LadeGCM.calculate</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>calculate(RCP45)
+</code></pre>
+
+<p>Entry point to the module. Will construct all required parameters and solve the DAE.</p>
+<p>Any flags you wish to pass to the solver can be added to the end of the call.</p>
+<pre><code>calculate(RCP45, reltol=1e-10, abstol=1e-10, saveat=1765:0.1:2100)
+</code></pre>
+
+<p>Works as expected.</p>
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/d5582cec7f2fc33601772f11f3435b0ca350aa21/src/LadeGCM.jl#L100-L110' class='documenter-source'>source</a><br></p>
+<p><a id='LadeGCM.generate_emission_parameters-Union{Tuple{P}, Tuple{P}} where P<:LadeGCM.Pathway' href='#LadeGCM.generate_emission_parameters-Union{Tuple{P}, Tuple{P}} where P<:LadeGCM.Pathway'>#</a>
+<strong><code>LadeGCM.generate_emission_parameters</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>(E, LUC) = generate_emission_parameters(RCP45)
+</code></pre>
+
+<p>For a given concentration pathway, generate continuous functions for fossil fuel emissions <code>E(t)</code> and land use emissions <code>LUC(t)</code>.</p>
+<p>Data comes from files on disk and is linearly interpolated to provide the continuous output.</p>
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/d5582cec7f2fc33601772f11f3435b0ca350aa21/src/LadeGCM.jl#L83-L91' class='documenter-source'>source</a><br></p>
+<p><a id='LadeGCM.load_pathway_data-Union{Tuple{P}, Tuple{P}} where P<:LadeGCM.Pathway' href='#LadeGCM.load_pathway_data-Union{Tuple{P}, Tuple{P}} where P<:LadeGCM.Pathway'>#</a>
+<strong><code>LadeGCM.load_pathway_data</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>data_frame = load_pathway_data(RCP45)
+</code></pre>
+
+<p>Loads csv file for a given RCP scenario into a dataframe for processing. The information in these files come from Meinshausen et al. (2011), which were generated using MAGICC6.</p>
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/d5582cec7f2fc33601772f11f3435b0ca350aa21/src/LadeGCM.jl#L69-L75' class='documenter-source'>source</a><br></p>
+<p><a id='LadeGCM.results-Union{Tuple{S,LadeGCM.Constants}, Tuple{S}} where S<:DiffEqBase.DAESolution' href='#LadeGCM.results-Union{Tuple{S,LadeGCM.Constants}, Tuple{S}} where S<:DiffEqBase.DAESolution'>#</a>
+<strong><code>LadeGCM.results</code></strong> &mdash; <em>Method</em>.</p>
+<p>Collects all required outputs from the DAE solution.</p>
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/d5582cec7f2fc33601772f11f3435b0ca350aa21/src/LadeGCM.jl#L172-L174' class='documenter-source'>source</a><br></p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/Libbum/LadeGCM.jl/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+      <script src="../assets/mathjaxhelper.js"></script>
+      <script src="../search/require.js"></script>
+      <script src="../search/search.js"></script>
+
+</body>
+</html>

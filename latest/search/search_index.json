@@ -1,0 +1,39 @@
+{
+    "docs": [
+        {
+            "location": "/", 
+            "text": "LadeGCM Documentation\n\n\n\n\nUsage\n\n\n\n\nAcknowledging LadeGCM\n\n\nIf you use LadeGCM in your research, please reference this repository and the following article:\n\n\nLade et al., \nEarth Systems Dynamics\n \n9\n, 507\n523 (2018) \n\n\nDOI: \n10.5194/esd-9-507-2018\n\n\n@Article{esd-9-507-2018,\nAUTHOR = {Lade, S. J. and Donges, J. F. and Fetzer, I. and Anderies, J. M. and Beer, C. and Cornell, S. E. and Gasser, T. and Norberg, J. and Richardson, K. and Rockstr\\\nom, J. and Steffen, W.},\nTITLE = {Analytically tractable climate--carbon cycle feedbacks under 21st century anthropogenic forcing},\nJOURNAL = {Earth System Dynamics},\nVOLUME = {9},\nYEAR = {2018},\nNUMBER = {2},\nPAGES = {507--523},\nURL = {https://www.earth-syst-dynam.net/9/507/2018/},\nDOI = {10.5194/esd-9-507-2018}\n}\n\n\n\n\n\n\nLicense\n\n\nLicensed under the Apache License, \nVersion 2.0\n or the \nMIT license\n, at your discretion. These files may not be copied, modified, or distributed except according to those terms.", 
+            "title": "Home"
+        }, 
+        {
+            "location": "/#ladegcm-documentation", 
+            "text": "", 
+            "title": "LadeGCM Documentation"
+        }, 
+        {
+            "location": "/#usage", 
+            "text": "", 
+            "title": "Usage"
+        }, 
+        {
+            "location": "/#acknowledging-ladegcm", 
+            "text": "If you use LadeGCM in your research, please reference this repository and the following article:  Lade et al.,  Earth Systems Dynamics   9 , 507 523 (2018)   DOI:  10.5194/esd-9-507-2018  @Article{esd-9-507-2018,\nAUTHOR = {Lade, S. J. and Donges, J. F. and Fetzer, I. and Anderies, J. M. and Beer, C. and Cornell, S. E. and Gasser, T. and Norberg, J. and Richardson, K. and Rockstr\\ om, J. and Steffen, W.},\nTITLE = {Analytically tractable climate--carbon cycle feedbacks under 21st century anthropogenic forcing},\nJOURNAL = {Earth System Dynamics},\nVOLUME = {9},\nYEAR = {2018},\nNUMBER = {2},\nPAGES = {507--523},\nURL = {https://www.earth-syst-dynam.net/9/507/2018/},\nDOI = {10.5194/esd-9-507-2018}\n}", 
+            "title": "Acknowledging LadeGCM"
+        }, 
+        {
+            "location": "/#license", 
+            "text": "Licensed under the Apache License,  Version 2.0  or the  MIT license , at your discretion. These files may not be copied, modified, or distributed except according to those terms.", 
+            "title": "License"
+        }, 
+        {
+            "location": "/api/", 
+            "text": "API\n\n\n\n\nLadeGCM.calculate\n\n\nLadeGCM.generate_emission_parameters\n\n\nLadeGCM.load_pathway_data\n\n\nLadeGCM.results\n\n\n\n\n#\n\n\nLadeGCM.calculate\n \n \nMethod\n.\n\n\ncalculate(RCP45)\n\n\n\n\nEntry point to the module. Will construct all required parameters and solve the DAE.\n\n\nAny flags you wish to pass to the solver can be added to the end of the call.\n\n\ncalculate(RCP45, reltol=1e-10, abstol=1e-10, saveat=1765:0.1:2100)\n\n\n\n\nWorks as expected.\n\n\nsource\n\n\n#\n\n\nLadeGCM.generate_emission_parameters\n \n \nMethod\n.\n\n\n(E, LUC) = generate_emission_parameters(RCP45)\n\n\n\n\nFor a given concentration pathway, generate continuous functions for fossil fuel emissions \nE(t)\n and land use emissions \nLUC(t)\n.\n\n\nData comes from files on disk and is linearly interpolated to provide the continuous output.\n\n\nsource\n\n\n#\n\n\nLadeGCM.load_pathway_data\n \n \nMethod\n.\n\n\ndata_frame = load_pathway_data(RCP45)\n\n\n\n\nLoads csv file for a given RCP scenario into a dataframe for processing. The information in these files come from Meinshausen et al. (2011), which were generated using MAGICC6.\n\n\nsource\n\n\n#\n\n\nLadeGCM.results\n \n \nMethod\n.\n\n\nCollects all required outputs from the DAE solution.\n\n\nsource", 
+            "title": "API"
+        }, 
+        {
+            "location": "/api/#api", 
+            "text": "LadeGCM.calculate  LadeGCM.generate_emission_parameters  LadeGCM.load_pathway_data  LadeGCM.results   #  LadeGCM.calculate     Method .  calculate(RCP45)  Entry point to the module. Will construct all required parameters and solve the DAE.  Any flags you wish to pass to the solver can be added to the end of the call.  calculate(RCP45, reltol=1e-10, abstol=1e-10, saveat=1765:0.1:2100)  Works as expected.  source  #  LadeGCM.generate_emission_parameters     Method .  (E, LUC) = generate_emission_parameters(RCP45)  For a given concentration pathway, generate continuous functions for fossil fuel emissions  E(t)  and land use emissions  LUC(t) .  Data comes from files on disk and is linearly interpolated to provide the continuous output.  source  #  LadeGCM.load_pathway_data     Method .  data_frame = load_pathway_data(RCP45)  Loads csv file for a given RCP scenario into a dataframe for processing. The information in these files come from Meinshausen et al. (2011), which were generated using MAGICC6.  source  #  LadeGCM.results     Method .  Collects all required outputs from the DAE solution.  source", 
+            "title": "API"
+        }
+    ]
+}
