@@ -31,28 +31,33 @@ any of which can be overridden via a keyword argument.
 
 
 # Arguments
-- `cₐ₀::Float64=589.0`: #PgC, Pre-industrial atmospheric carbon
-- `cₜ₀::Float64=1875.0`: #PgC, Pre-industrial soil and vegetation carbon
-- `cₘ₀::Float64=900.0`: #PgC, Pre-industrial ocean mixed layer carbon
-- `λ::Float64=1.8`: #K, Climate sensitivity (TCR)
-- `τ::Float64=4.0`: #yr, Climate lag
-- `D::Float64=1.0`: #yr⁻¹, Atmosphere–ocean mixed layer CO₂ equilibration rate
-- `r::Float64=12.5`: #Revelle (buffer) factor
-- `DT::Float64=0.0423`: #4.23 % K⁻¹, Solubility temperature effect
-- `B₀::Float64=13.0`: #PgC yr⁻¹, Pre-industrial biological pump
-- `BT::Float64=0.032`: #3.2 % K⁻¹, Temperature dependence of biological pump
-- `w₀::Float64=0.1`: #yr⁻¹, Solubility pump rate
-- `wT::Float64=0.1`: #10 % K⁻¹, Weakening of overturning circulation with climate change
-- `QR::Float64=1.72`: #Terrestrial respiration temperature dependence
-- `NPP₀::Float64=55.0`: #PgC yr⁻¹, Pre-industrial NPP
-- `KC::Float64=0.3`: #Fertilisation effect
+- `cₐ₀::Float64=589.0`: PgC, Pre-industrial atmospheric carbon
+- `cₜ₀::Float64=1875.0`: PgC, Pre-industrial soil and vegetation carbon
+- `cₘ₀::Float64=900.0`: PgC, Pre-industrial ocean mixed layer carbon
+- `λ::Float64=1.8`: K, Climate sensitivity (TCR)
+- `τ::Float64=4.0`: yr, Climate lag
+- `D::Float64=1.0`: yr⁻¹, Atmosphere–ocean mixed layer CO₂ equilibration rate
+- `r::Float64=12.5`: Revelle (buffer) factor
+- `DT::Float64=0.0423`: 4.23 % K⁻¹, Solubility temperature effect
+- `B₀::Float64=13.0`: PgC yr⁻¹, Pre-industrial biological pump
+- `BT::Float64=0.032`: 3.2 % K⁻¹, Temperature dependence of biological pump
+- `w₀::Float64=0.1`: yr⁻¹, Solubility pump rate
+- `wT::Float64=0.1`: 10 % K⁻¹, Weakening of overturning circulation with climate change
+- `QR::Float64=1.72`: Terrestrial respiration temperature dependence
+- `NPP₀::Float64=55.0`: PgC yr⁻¹, Pre-industrial NPP
+- `KC::Float64=0.3`: Fertilisation effect
 
 
 # Examples
+
+Obtaining the default set of constants
+
 ```jldoctest
 julia> constants()
 LadeGCM.Constants(589.0, 1875.0, 900.0, 1.8, 4.0, 1.0, 12.5, 0.0423, 13.0, 0.032, 0.1, 0.1, 1.72, 55.0, 0.3)
 ```
+
+Override ``c_{a0}`` and ``KC`` with custom values.
 
 ```jldoctest
 julia> constants(cₐ₀=600.0, KC=0.5)
