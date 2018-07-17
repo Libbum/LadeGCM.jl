@@ -117,42 +117,139 @@
 <p><a id='API-1'></a></p>
 <h1 id="api">API</h1>
 <ul>
+<li><a href="./#LadeGCM.RCP3PD"><code>LadeGCM.RCP3PD</code></a></li>
+<li><a href="./#LadeGCM.RCP45"><code>LadeGCM.RCP45</code></a></li>
+<li><a href="./#LadeGCM.RCP6"><code>LadeGCM.RCP6</code></a></li>
+<li><a href="./#LadeGCM.RCP85"><code>LadeGCM.RCP85</code></a></li>
+<li><a href="./#LadeGCM.Constants"><code>LadeGCM.Constants</code></a></li>
+<li><a href="./#LadeGCM.Pathway"><code>LadeGCM.Pathway</code></a></li>
+<li><a href="./#LadeGCM.RCP3PDPathway"><code>LadeGCM.RCP3PDPathway</code></a></li>
+<li><a href="./#LadeGCM.RCP45Pathway"><code>LadeGCM.RCP45Pathway</code></a></li>
+<li><a href="./#LadeGCM.RCP6Pathway"><code>LadeGCM.RCP6Pathway</code></a></li>
+<li><a href="./#LadeGCM.RCP85Pathway"><code>LadeGCM.RCP85Pathway</code></a></li>
+<li><a href="./#LadeGCM.Results"><code>LadeGCM.Results</code></a></li>
 <li><a href="./#LadeGCM.calculate-Union{Tuple{P}, Tuple{P}} where P&lt;:LadeGCM.Pathway"><code>LadeGCM.calculate</code></a></li>
+<li><a href="./#LadeGCM.constants-Tuple{}"><code>LadeGCM.constants</code></a></li>
 <li><a href="./#LadeGCM.generate_emission_parameters-Union{Tuple{P}, Tuple{P}} where P&lt;:LadeGCM.Pathway"><code>LadeGCM.generate_emission_parameters</code></a></li>
 <li><a href="./#LadeGCM.load_pathway_data-Union{Tuple{P}, Tuple{P}} where P&lt;:LadeGCM.Pathway"><code>LadeGCM.load_pathway_data</code></a></li>
 <li><a href="./#LadeGCM.results-Union{Tuple{S,LadeGCM.Constants}, Tuple{S}} where S&lt;:DiffEqBase.DAESolution"><code>LadeGCM.results</code></a></li>
 </ul>
+<p><a id='LadeGCM.RCP3PD' href='#LadeGCM.RCP3PD'>#</a>
+<strong><code>LadeGCM.RCP3PD</code></strong> &mdash; <em>Constant</em>.</p>
+<p>Alias for the <a href="./#LadeGCM.RCP3PDPathway"><code>RCP3PDPathway</code></a> constructor.</p>
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/6d233d8fae77e0fd9209320ef7f47ff16597597e/src/LadeGCM.jl#L96' class='documenter-source'>source</a><br></p>
+<p><a id='LadeGCM.RCP45' href='#LadeGCM.RCP45'>#</a>
+<strong><code>LadeGCM.RCP45</code></strong> &mdash; <em>Constant</em>.</p>
+<p>Alias for the <a href="./#LadeGCM.RCP45Pathway"><code>RCP45Pathway</code></a> constructor.</p>
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/6d233d8fae77e0fd9209320ef7f47ff16597597e/src/LadeGCM.jl#L98' class='documenter-source'>source</a><br></p>
+<p><a id='LadeGCM.RCP6' href='#LadeGCM.RCP6'>#</a>
+<strong><code>LadeGCM.RCP6</code></strong> &mdash; <em>Constant</em>.</p>
+<p>Alias for the <a href="./#LadeGCM.RCP6Pathway"><code>RCP6Pathway</code></a> constructor.</p>
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/6d233d8fae77e0fd9209320ef7f47ff16597597e/src/LadeGCM.jl#L100' class='documenter-source'>source</a><br></p>
+<p><a id='LadeGCM.RCP85' href='#LadeGCM.RCP85'>#</a>
+<strong><code>LadeGCM.RCP85</code></strong> &mdash; <em>Constant</em>.</p>
+<p>Alias for the <a href="./#LadeGCM.RCP85Pathway"><code>RCP85Pathway</code></a> constructor.</p>
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/6d233d8fae77e0fd9209320ef7f47ff16597597e/src/LadeGCM.jl#L102' class='documenter-source'>source</a><br></p>
 <p><a id='LadeGCM.calculate-Union{Tuple{P}, Tuple{P}} where P<:LadeGCM.Pathway' href='#LadeGCM.calculate-Union{Tuple{P}, Tuple{P}} where P<:LadeGCM.Pathway'>#</a>
 <strong><code>LadeGCM.calculate</code></strong> &mdash; <em>Method</em>.</p>
-<pre><code>calculate(RCP45)
+<pre><code>calculate(rcp; [c=constants(), tspan=(1765., 2100.), solve_args...])
 </code></pre>
 
 <p>Entry point to the module. Will construct all required parameters and solve the DAE.</p>
+<p>The <code>tspan</code> here is set to mimic the Lade <em>et al</em>. paper, but the emission parameters in each of the RCP files project out to 2500; meaning the 1765&ndash;2500 range is valid here.</p>
 <p>Any flags you wish to pass to the solver can be added to the end of the call.</p>
-<pre><code>calculate(RCP45, reltol=1e-10, abstol=1e-10, saveat=1765:0.1:2100)
+<p><strong>Examples</strong></p>
+<pre><code class="julia">results_6 = calculate(RCP6);
 </code></pre>
 
-<p>Works as expected.</p>
-<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/7db29d716473c94087288ed7403bd3f16f637efe/src/LadeGCM.jl#L100-L110' class='documenter-source'>source</a><br></p>
+<pre><code class="julia">results_45_grid = calculate(RCP45, reltol=1e-10, abstol=1e-10, saveat=1765:0.1:2100);
+</code></pre>
+
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/6d233d8fae77e0fd9209320ef7f47ff16597597e/src/LadeGCM.jl#L146-L165' class='documenter-source'>source</a><br></p>
+<p><a id='LadeGCM.constants-Tuple{}' href='#LadeGCM.constants-Tuple{}'>#</a>
+<strong><code>LadeGCM.constants</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>constants(&lt;keyword arguments&gt;)
+</code></pre>
+
+<p>A constructor to generate all required constants for the model, any of which can be overridden via a keyword argument.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li><code>cₐ₀::Float64=589.0</code>: #PgC, Pre-industrial atmospheric carbon</li>
+<li><code>cₜ₀::Float64=1875.0</code>: #PgC, Pre-industrial soil and vegetation carbon</li>
+<li><code>cₘ₀::Float64=900.0</code>: #PgC, Pre-industrial ocean mixed layer carbon</li>
+<li><code>λ::Float64=1.8</code>: #K, Climate sensitivity (TCR)</li>
+<li><code>τ::Float64=4.0</code>: #yr, Climate lag</li>
+<li><code>D::Float64=1.0</code>: #yr⁻¹, Atmosphere–ocean mixed layer CO₂ equilibration rate</li>
+<li><code>r::Float64=12.5</code>: #Revelle (buffer) factor</li>
+<li><code>DT::Float64=0.0423</code>: #4.23 % K⁻¹, Solubility temperature effect</li>
+<li><code>B₀::Float64=13.0</code>: #PgC yr⁻¹, Pre-industrial biological pump</li>
+<li><code>BT::Float64=0.032</code>: #3.2 % K⁻¹, Temperature dependence of biological pump</li>
+<li><code>w₀::Float64=0.1</code>: #yr⁻¹, Solubility pump rate</li>
+<li><code>wT::Float64=0.1</code>: #10 % K⁻¹, Weakening of overturning circulation with climate change</li>
+<li><code>QR::Float64=1.72</code>: #Terrestrial respiration temperature dependence</li>
+<li><code>NPP₀::Float64=55.0</code>: #PgC yr⁻¹, Pre-industrial NPP</li>
+<li><code>KC::Float64=0.3</code>: #Fertilisation effect</li>
+</ul>
+<p><strong>Examples</strong></p>
+<pre><code class="julia-repl">julia&gt; constants()
+LadeGCM.Constants(589.0, 1875.0, 900.0, 1.8, 4.0, 1.0, 12.5, 0.0423, 13.0, 0.032, 0.1, 0.1, 1.72, 55.0, 0.3)
+</code></pre>
+
+<pre><code class="julia-repl">julia&gt; constants(cₐ₀=600.0, KC=0.5)
+LadeGCM.Constants(600.0, 1875.0, 900.0, 1.8, 4.0, 1.0, 12.5, 0.0423, 13.0, 0.032, 0.1, 0.1, 1.72, 55.0, 0.5)
+</code></pre>
+
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/6d233d8fae77e0fd9209320ef7f47ff16597597e/src/LadeGCM.jl#L26-L62' class='documenter-source'>source</a><br></p>
+<p><a id='LadeGCM.Constants' href='#LadeGCM.Constants'>#</a>
+<strong><code>LadeGCM.Constants</code></strong> &mdash; <em>Type</em>.</p>
+<p>Houses all constants for the model. See: <a href="./#LadeGCM.constants-Tuple{}"><code>constants</code></a>.</p>
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/6d233d8fae77e0fd9209320ef7f47ff16597597e/src/LadeGCM.jl#L7' class='documenter-source'>source</a><br></p>
+<p><a id='LadeGCM.Pathway' href='#LadeGCM.Pathway'>#</a>
+<strong><code>LadeGCM.Pathway</code></strong> &mdash; <em>Type</em>.</p>
+<p>Representation of a <em>Representative Concentration Pathway</em>.</p>
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/6d233d8fae77e0fd9209320ef7f47ff16597597e/src/LadeGCM.jl#L85' class='documenter-source'>source</a><br></p>
+<p><a id='LadeGCM.RCP3PDPathway' href='#LadeGCM.RCP3PDPathway'>#</a>
+<strong><code>LadeGCM.RCP3PDPathway</code></strong> &mdash; <em>Type</em>.</p>
+<p>RCP3PD Representation.</p>
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/6d233d8fae77e0fd9209320ef7f47ff16597597e/src/LadeGCM.jl#L87' class='documenter-source'>source</a><br></p>
+<p><a id='LadeGCM.RCP45Pathway' href='#LadeGCM.RCP45Pathway'>#</a>
+<strong><code>LadeGCM.RCP45Pathway</code></strong> &mdash; <em>Type</em>.</p>
+<p>RCP45 Representation.</p>
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/6d233d8fae77e0fd9209320ef7f47ff16597597e/src/LadeGCM.jl#L89' class='documenter-source'>source</a><br></p>
+<p><a id='LadeGCM.RCP6Pathway' href='#LadeGCM.RCP6Pathway'>#</a>
+<strong><code>LadeGCM.RCP6Pathway</code></strong> &mdash; <em>Type</em>.</p>
+<p>RCP6 Representation.</p>
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/6d233d8fae77e0fd9209320ef7f47ff16597597e/src/LadeGCM.jl#L91' class='documenter-source'>source</a><br></p>
+<p><a id='LadeGCM.RCP85Pathway' href='#LadeGCM.RCP85Pathway'>#</a>
+<strong><code>LadeGCM.RCP85Pathway</code></strong> &mdash; <em>Type</em>.</p>
+<p>RCP85 Representation.</p>
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/6d233d8fae77e0fd9209320ef7f47ff16597597e/src/LadeGCM.jl#L93' class='documenter-source'>source</a><br></p>
+<p><a id='LadeGCM.Results' href='#LadeGCM.Results'>#</a>
+<strong><code>LadeGCM.Results</code></strong> &mdash; <em>Type</em>.</p>
+<p>Storage for all model output. See <a href="./#LadeGCM.results-Union{Tuple{S,LadeGCM.Constants}, Tuple{S}} where S&lt;:DiffEqBase.DAESolution"><code>results</code></a>.</p>
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/6d233d8fae77e0fd9209320ef7f47ff16597597e/src/LadeGCM.jl#L211' class='documenter-source'>source</a><br></p>
 <p><a id='LadeGCM.generate_emission_parameters-Union{Tuple{P}, Tuple{P}} where P<:LadeGCM.Pathway' href='#LadeGCM.generate_emission_parameters-Union{Tuple{P}, Tuple{P}} where P<:LadeGCM.Pathway'>#</a>
 <strong><code>LadeGCM.generate_emission_parameters</code></strong> &mdash; <em>Method</em>.</p>
-<pre><code>(E, LUC) = generate_emission_parameters(RCP45)
+<pre><code>(E, LUC) = generate_emission_parameters(rcp)
 </code></pre>
 
 <p>For a given concentration pathway, generate continuous functions for fossil fuel emissions <code>E(t)</code> and land use emissions <code>LUC(t)</code>.</p>
 <p>Data comes from files on disk and is linearly interpolated to provide the continuous output.</p>
-<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/7db29d716473c94087288ed7403bd3f16f637efe/src/LadeGCM.jl#L83-L91' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/6d233d8fae77e0fd9209320ef7f47ff16597597e/src/LadeGCM.jl#L129-L137' class='documenter-source'>source</a><br></p>
 <p><a id='LadeGCM.load_pathway_data-Union{Tuple{P}, Tuple{P}} where P<:LadeGCM.Pathway' href='#LadeGCM.load_pathway_data-Union{Tuple{P}, Tuple{P}} where P<:LadeGCM.Pathway'>#</a>
 <strong><code>LadeGCM.load_pathway_data</code></strong> &mdash; <em>Method</em>.</p>
-<pre><code>data_frame = load_pathway_data(RCP45)
+<pre><code>load_pathway_data(rcp)
 </code></pre>
 
-<p>Loads csv file for a given RCP scenario into a dataframe for processing. The information in these files come from Meinshausen et al. (2011), which were generated using MAGICC6.</p>
-<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/7db29d716473c94087288ed7403bd3f16f637efe/src/LadeGCM.jl#L69-L75' class='documenter-source'>source</a><br></p>
+<p>Loads csv file for a given RCP scenario into a dataframe for processing. The information in these files comes from <a href="https://doi.org/10.1007/s10584-011-0156-z">Meinshausen et al. (2011)</a>, which were generated using MAGICC6.</p>
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/6d233d8fae77e0fd9209320ef7f47ff16597597e/src/LadeGCM.jl#L116-L121' class='documenter-source'>source</a><br></p>
 <p><a id='LadeGCM.results-Union{Tuple{S,LadeGCM.Constants}, Tuple{S}} where S<:DiffEqBase.DAESolution' href='#LadeGCM.results-Union{Tuple{S,LadeGCM.Constants}, Tuple{S}} where S<:DiffEqBase.DAESolution'>#</a>
 <strong><code>LadeGCM.results</code></strong> &mdash; <em>Method</em>.</p>
+<pre><code>results(sol, c)
+</code></pre>
+
 <p>Collects all required outputs from the DAE solution.</p>
-<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/7db29d716473c94087288ed7403bd3f16f637efe/src/LadeGCM.jl#L172-L174' class='documenter-source'>source</a><br></p></div>
+<p><a target='_blank' href='https://github.com/Libbum/LadeGCM.jl/blob/6d233d8fae77e0fd9209320ef7f47ff16597597e/src/LadeGCM.jl#L226-L230' class='documenter-source'>source</a><br></p></div>
         
     </div>
 
