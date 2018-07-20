@@ -11,7 +11,7 @@ extra_css:
 extra_javascript:
   - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML
   - https://cdn.plot.ly/plotly-latest.min.js
-  - figures/fig2.js
+  - docs/figures/fig2.js
   - assets/mathjaxhelper.js
 
 markdown_extensions:
