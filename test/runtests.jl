@@ -95,6 +95,7 @@ end
     # so we round everything for stability.
     r6 = calculate(RCP6, saveat=1765:10:2100);
     r85 = calculate(RCP85, saveat=1765:10:2100);
+@static if VERSION < v"0.7.0-DEV.2005"
     @test isapprox(round(r6.cₜ[13],0), 1863.0; atol = 2)
     @test isapprox(round(r6.cₘ[28],0), 930.0; atol = 2)
     @test isapprox(round(r6.cₐ[3],0), 590.0; atol = 2)
@@ -115,4 +116,26 @@ end
     @test isapprox(round(r85.Δcₛ[26],0), 7.0; atol = 2)
     @test isapprox(round(r85.Δcₐ[10],0), 0.0; atol = 2)
     @test isapprox(round(r85.year[28],0), 2035.0; atol = 2)
+else
+    @test isapprox(round(r6.cₜ[13];digits=0), 1863.0; atol = 2)
+    @test isapprox(round(r6.cₘ[28];digits=0), 930.0; atol = 2)
+    @test isapprox(round(r6.cₐ[3];digits=0), 590.0; atol = 2)
+    @test isapprox(round(r6.ΔT[9];digits=0), 0.0; atol = 2)
+    @test isapprox(round(r6.Δcₜ[27];digits=0), 2.0; atol = 2)
+    @test isapprox(round(r6.Δcₘ[14];digits=0), 0.0; atol = 2)
+    @test isapprox(round(r6.ΔcM[23];digits=0), 1.0; atol = 2)
+    @test isapprox(round(r6.Δcₛ[16];digits=0), 1.0; atol = 2)
+    @test isapprox(round(r6.Δcₐ[31];digits=0), 10.0; atol = 2)
+    @test isapprox(round(r6.year[24];digits=0), 1995.0; atol = 2)
+    @test isapprox(round(r85.cₜ[30];digits=0), 1991.0; atol = 2)
+    @test isapprox(round(r85.cₘ[8];digits=0), 900.0; atol = 2)
+    @test isapprox(round(r85.cₐ[16];digits=0), 614.0; atol = 2)
+    @test isapprox(round(r85.ΔT[29];digits=0), 2.0; atol = 2)
+    @test isapprox(round(r85.Δcₜ[21];digits=0), 0.0; atol = 2)
+    @test isapprox(round(r85.Δcₘ[18];digits=0), 0.0; atol = 2)
+    @test isapprox(round(r85.ΔcM[4];digits=0), 0.0; atol = 2)
+    @test isapprox(round(r85.Δcₛ[26];digits=0), 7.0; atol = 2)
+    @test isapprox(round(r85.Δcₐ[10];digits=0), 0.0; atol = 2)
+    @test isapprox(round(r85.year[28];digits=0), 2035.0; atol = 2)
+end
 end
