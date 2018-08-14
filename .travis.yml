@@ -10,7 +10,9 @@ notifications:
   email: false
 matrix:
   allow_failures:
-  - julia: nightly
+  - julia: 
+    - 1.0
+    - nightly
 addons:
   apt:
     packages:
