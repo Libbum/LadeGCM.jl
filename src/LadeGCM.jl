@@ -5,7 +5,7 @@ using CSV, DataFrames
 using Interpolations
 
 """Houses all constants for the model. See: [`constants`](@ref)."""
-immutable Constants
+struct Constants
     cₐ₀::Float64 #PgC, Pre-industrial atmospheric carbon
     cₜ₀::Float64 #PgC, Pre-industrial soil and vegetation carbon
     cₘ₀::Float64 #PgC, Pre-industrial ocean mixed layer carbon
@@ -90,13 +90,13 @@ export constants
 """Representation of a *Representative Concentration Pathway*."""
 abstract type Pathway end
 """RCP3PD Representation."""
-immutable RCP3PDPathway <: Pathway end
+struct RCP3PDPathway <: Pathway end
 """RCP45 Representation."""
-immutable RCP45Pathway <: Pathway end
+struct RCP45Pathway <: Pathway end
 """RCP6 Representation."""
-immutable RCP6Pathway <: Pathway end
+struct RCP6Pathway <: Pathway end
 """RCP85 Representation."""
-immutable RCP85Pathway <: Pathway end
+struct RCP85Pathway <: Pathway end
 
 """Alias for the [`RCP3PDPathway`](@ref) constructor."""
 RCP3PD = RCP3PDPathway()
@@ -124,7 +124,7 @@ export RCP3PD, RCP45, RCP6, RCP85
 Loads csv file for a given RCP scenario into a dataframe for processing.
 The information in these files comes from [Meinshausen et al. (2011)](https://doi.org/10.1007/s10584-011-0156-z), which were generated using MAGICC6.
 """
-function load_pathway_data{P<:Pathway}(rcp::P)
+function load_pathway_data(rcp::P) where P <: Pathway
     data = CSV.read(joinpath(@__DIR__, "..", "input", string(summary(rcp), "_EMISSIONS.csv")), header=37, datarow=38, types=[Int64; repeat([Float64]; outer=[39])]);
     tmpnames = names(data);
     tmpnames[1] = :Year;
@@ -140,7 +140,7 @@ for fossil fuel emissions `E(t)` and land use emissions `LUC(t)`.
 Data comes from files on disk and is linearly interpolated to
 provide the continuous output.
 """
-function generate_emission_parameters{P<:Pathway}(rcp::P)
+function generate_emission_parameters(rcp::P) where P <: Pathway
     data = load_pathway_data(rcp);
     Years = (data[:Year],);
     E = interpolate(Years, data[:FossilCO2], Gridded(Linear()));
@@ -168,20 +168,20 @@ results_45_grid = calculate(RCP45, reltol=1e-10, abstol=1e-10, saveat=1765:0.1:2
 ```
 
 """
-function calculate{P<:Pathway}(rcp::P; #Which scenario are we solving for?
+function calculate(rcp::P; #Which scenario are we solving for?
     c::Constants = constants(), #Input conditions.
     tspan = (1765., 2100.), #Time span of calculation.
-    solve_args...) #Any additional arguments to pass to the solver, like tolerances or timestep alterations.
+    solve_args...) where P <: Pathway #Any additional arguments to pass to the solver, like tolerances or timestep alterations.
 
     #Get emission data
-    const (E, LUC) = generate_emission_parameters(rcp);
+    (E, LUC) = generate_emission_parameters(rcp);
 
     #Construct initial conditions and parameters for DAE solving
     #             cₜ     cₘ           cₛ          ΔT    cₐ
-    const u₀ = [c.cₜ₀, c.cₘ₀, c.cₐ₀+c.cₜ₀+c.cₘ₀, 0.0, c.cₐ₀];
-    const du₀ = similar(u₀);
-    const diff_vars = [true,true,true,true,false];
-    const params = [c.NPP₀, c.KC, c.cₐ₀, c.QR, c.cₜ₀, c.D, c.cₘ₀, c.r, c.DT, c.w₀, c.wT, c.B₀, c.BT, c.τ, c.λ];
+    u₀ = [c.cₜ₀, c.cₘ₀, c.cₐ₀+c.cₜ₀+c.cₘ₀, 0.0, c.cₐ₀];
+    du₀ = similar(u₀);
+    diff_vars = [true,true,true,true,false];
+    params = [c.NPP₀, c.KC, c.cₐ₀, c.QR, c.cₜ₀, c.D, c.cₘ₀, c.r, c.DT, c.w₀, c.wT, c.B₀, c.BT, c.τ, c.λ];
 
     """A helper used for solving the DAE."""
     function system(out, du, u, p, t)
@@ -214,7 +214,7 @@ end
 export calculate
 
 """Storage for all model output. See [`results`](@ref)."""
-immutable Results
+struct Results
     cₜ::Array{Float64,1} #PgC, Terrestrial (soil and vegetation) carbon concentration
     cₘ::Array{Float64,1} #PgC, Ocean mixed later carbon concentration
     cₛ::Array{Float64,1} #PgC, System (total) carbon concentration (Atmospheric + Terrestrial + Ocean mixed layer)
@@ -233,9 +233,9 @@ end
 
 Collects all required outputs from the DAE solution.
 """
-function results{S<:DiffEqBase.DAESolution}(sol::S, c::Constants)
-    const u = hcat(sol(sol.t, Val{0})...)';
-    const du = hcat(sol(sol.t, Val{1})...)';
+function results(sol::S, c::Constants) where S <: DiffEqBase.DAESolution
+    u = hcat(sol(sol.t, Val{0})...)';
+    du = hcat(sol(sol.t, Val{1})...)';
 
     cₜ = u[:,1];
     cₘ = u[:,2];
