@@ -1,7 +1,7 @@
 name = "LadeGCM"
 uuid = "c280e090-9fa3-11e8-3b66-1b03abdd6bf8"
 authors = ["Tim DuBois <tim@neophilus.net>"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
