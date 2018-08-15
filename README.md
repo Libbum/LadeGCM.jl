@@ -28,6 +28,16 @@ This model is able to reproduce the Land, Ocean and Atmospheric CO₂ stock pred
 <img src="https://github.com/Libbum/LadeGCM.jl/blob/master/output.png?raw=true" alt="Results from defaul values of model" />
 </center>
 
+# Julia versioning
+
+Since the release of v0.7 (and v1.0) the Julia ecosystem has been going through some churn.
+LadeGCM was written in v0.6.3 initially and still (currently) runs fine if you wish to sit on v0.6 for a while until things settle down.
+
+The current master and v0.2 here are effectively a dual release compatible with versions 0.6, 0.7 and 1.0.
+At the time of writing, tests on 0.7 will show warnings in `DiffEqBase`, which were [fixed](https://github.com/JuliaDiffEq/DiffEqBase.jl/pull/139) for 1.0 only, and there is still some work to be done in [`RandomNumbers`](https://github.com/sunoru/RandomNumbers.jl/pull/42) that will most likely remove any warnings from a 1.0 build.
+
+Regardless, LadeGCM functions across all versions for now, but may drop support for 0.6 at some later stage.
+
 # Acknowledging LadeGCM
 
 If you use LadeGCM in your research, please reference this repository and the following article:
