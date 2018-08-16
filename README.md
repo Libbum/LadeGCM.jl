@@ -12,6 +12,10 @@
     <a href="https://codecov.io/gh/Libbum/LadeGCM.jl">
         <img src="https://codecov.io/gh/Libbum/LadeGCM.jl/branch/master/graph/badge.svg" alt="Codecov" />
     </a>
+    |
+    <a href="https://app.fossa.io/projects/git%2Bgithub.com%2FLibbum%2FLadeGCM.jl?ref=badge_shield">
+        <img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2FLibbum%2FLadeGCM.jl.svg?type=shield" alt="FOSSA Status" />
+    </a>
 </div>
 <br />
 
@@ -43,7 +47,6 @@ Regardless, LadeGCM functions across all versions for now, but may drop support 
 If you use LadeGCM in your research, please reference this repository and the following article:
 
 Lade et al., *Earth Systems Dynamics* **9**, 507&ndash;523 (2018) [![Creative Commons Attribution](https://i.creativecommons.org/l/by/4.0/80x15.png)](http://creativecommons.org/licenses/by/4.0/)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FLibbum%2FLadeGCM.jl.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FLibbum%2FLadeGCM.jl?ref=badge_shield)
 
 DOI: [10.5194/esd-9-507-2018](https://doi.org/10.5194/esd-9-507-2018)
 
