@@ -12,6 +12,10 @@
     <a href="https://codecov.io/gh/Libbum/LadeGCM.jl">
         <img src="https://codecov.io/gh/Libbum/LadeGCM.jl/branch/master/graph/badge.svg" alt="Codecov" />
     </a>
+    |
+    <a href="https://app.fossa.io/projects/git%2Bgithub.com%2FLibbum%2FLadeGCM.jl?ref=badge_shield">
+        <img src="https://app.fossa.io/api/projects/git%2Bgithub.com%2FLibbum%2FLadeGCM.jl.svg?type=shield" alt="FOSSA Status" />
+    </a>
 </div>
 <br />
 
@@ -64,3 +68,6 @@ DOI = {10.5194/esd-9-507-2018}
 # License
 
 Licensed under the Apache License, [Version 2.0](http://www.apache.org/licenses/LICENSE-2.0) or the [MIT license](http://opensource.org/licenses/MIT), at your discretion. These files may not be copied, modified, or distributed except according to those terms.
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FLibbum%2FLadeGCM.jl.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FLibbum%2FLadeGCM.jl?ref=badge_large)
