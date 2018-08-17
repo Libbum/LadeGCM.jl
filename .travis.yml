@@ -15,13 +15,20 @@ addons:
   apt:
     packages:
     - gfortran
+steps:
+  - run:
+    name: Install FOSSA
+    command: curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | sudo bash
+  - checkout
 install:
   pip install --user mkdocs-cinder
-script:
+before_script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+  - fossa
+script:
   - |
       if [[ "$TRAVIS_JULIA_VERSION" == "0.6" ]]; then
-        julia --check-bounds=yes -e 'Pkg.clone(pwd()); Pkg.build("LadeGCM"); Pkg.test("LadeGCM"; coverage=true)'
+        julia -e 'Pkg.clone(pwd()); Pkg.build("LadeGCM"); Pkg.test("LadeGCM"; coverage=true)'
       else
         julia -e 'using Pkg; Pkg.test("LadeGCM"; coverage=true)'
       fi
