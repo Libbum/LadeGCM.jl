@@ -16,10 +16,16 @@ addons:
     packages:
     - gfortran
 install:
-  - pip install --user mkdocs-cinder
-  - curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | sudo bash
+  - |
+      if [[ "$TRAVIS_JULIA_VERSION" == "0.6" ]]; then
+        pip install --user mkdocs-cinder
+        curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | sudo bash
+      fi
 before_script:
-  - fossa
+  - |
+      if [[ "$TRAVIS_JULIA_VERSION" == "0.6" ]]; then
+        fossa
+      fi
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - |
