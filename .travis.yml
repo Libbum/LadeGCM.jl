@@ -16,12 +16,22 @@ addons:
     packages:
     - gfortran
 install:
-  pip install --user mkdocs-cinder
-script:
+  - |
+      if [[ "$TRAVIS_JULIA_VERSION" == "0.6" ]]; then
+        pip install --user mkdocs-cinder
+        curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/fossa-cli/master/install.sh | sudo bash
+      fi
+before_script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - |
       if [[ "$TRAVIS_JULIA_VERSION" == "0.6" ]]; then
-        julia --check-bounds=yes -e 'Pkg.clone(pwd()); Pkg.build("LadeGCM"); Pkg.test("LadeGCM"; coverage=true)'
+        julia -e 'Pkg.clone(pwd())'
+        fossa
+      fi
+script:
+  - |
+      if [[ "$TRAVIS_JULIA_VERSION" == "0.6" ]]; then
+        julia -e 'Pkg.build("LadeGCM"); Pkg.test("LadeGCM"; coverage=true)'
       else
         julia -e 'using Pkg; Pkg.test("LadeGCM"; coverage=true)'
       fi
