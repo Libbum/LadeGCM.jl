@@ -1,7 +1,9 @@
 module LadeGCM
 
 using DifferentialEquations
-using CSV, DataFrames
+using Sundials
+using CSV
+using DataFrames
 using Interpolations
 
 """Houses all constants for the model. See: [`constants`](@ref)."""
@@ -196,9 +198,9 @@ function calculate(rcp::P; #Which scenario are we solving for?
         ph(cm,DeltaT) = cₐ₀*(cm/cₘ₀)^r*(1/(1-DT*DeltaT))
         S(cm,DeltaT) = w₀*(1-wT*DeltaT)*(cm-cₘ₀)
         B(DeltaT) = B₀*(1-BT*DeltaT)
-        out[1] = (NPP₀/cₜ₀)*QR^(ΔT/10.)*(K(cₐ,ΔT)-cₜ)-LUC[t] - du[1] #cₜ
+        out[1] = (NPP₀/cₜ₀)*QR^(ΔT/10.)*(K(cₐ,ΔT)-cₜ)-LUC(t) - du[1] #cₜ
         out[2] = ((D*cₘ₀)/(r*cₐ₀))*(cₐ-ph(cₘ,ΔT))-S(cₘ,ΔT)-B(ΔT)+B₀ - du[2] #cₘ
-        out[3] = E[t] - S(cₘ,ΔT) - (B(ΔT)-B₀) - du[3] #cₛ
+        out[3] = E(t) - S(cₘ,ΔT) - (B(ΔT)-B₀) - du[3] #cₛ
         out[4] = (1/τ)*((λ/log(2))*log(cₐ/cₐ₀)-ΔT) - du[4] #ΔT
         out[5] = cₐ + cₜ + cₘ - cₛ #equivalence (cₐ)
     end
