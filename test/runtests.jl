@@ -83,10 +83,10 @@ end
     end
     @testset "Generate Continuous Data" begin
         (E, LUC) = LadeGCM.generate_emission_parameters(RCP45);
-        @test E[1728.8] ≈ 0.003
-        @test E[2100] ≈ 4.203
-        @test LUC[1982.77] ≈ 1.217443742
-        @test LUC[2019] ≈ 0.39778
+        @test E(1768.8) ≈ 0.003
+        @test E(2100) ≈ 4.203
+        @test LUC(1982.77) ≈ 1.217443742
+        @test LUC(2019) ≈ 0.39778
     end
 end
 
